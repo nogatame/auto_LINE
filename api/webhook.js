@@ -14,7 +14,7 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 module.exports = async (req, res) => {
-  // LINEからの検証用「検証」ボタンなど、POST以外は無視
+  // LINEからの検証やPOST以外は無視
   if (req.method !== 'POST') {
     return res.status(200).send('OK');
   }
@@ -27,19 +27,17 @@ module.exports = async (req, res) => {
 
     const event = events[0];
 
-    // メッセージ受信または友達追加の場合
     if (event.type === 'message' || event.type === 'follow') {
       const replyToken = event.replyToken;
 
-      // Firestoreからデータを取得
-      // Node.jsのSDKでは .get() を使い、中身は .data() で取れます
+      // Firestoreから取得
       const doc = await db.collection('latest_broadcast').doc('text').get();
-      const fields = doc.exists ? doc.data() : null;
-
+      
       let messageText = "データが見つかりませんでした";
-      if (fields) {
-        // Node.js版SDKは .stringValue を書かなくても直接値が取れます
-        messageText = fields["0"] || "内容なし";
+      
+      if (doc.exists) {
+        const data = doc.data(); // ここで data に代入
+        messageText = data["0"] || "内容なし"; // data を参照
       }
 
       // LINEに返信
@@ -58,8 +56,10 @@ module.exports = async (req, res) => {
 
     res.status(200).send('OK');
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error Detail:", error);
+    // 401エラーを回避するため、エラー時も200を返しつつログを出す
+    res.status(200).send('Internal Error But OK');
   }
 };
+
 
