@@ -4,7 +4,7 @@
   "description": "Firestore and LINE Bot on Vercel",
   "main": "api/webhook.js",
   "scripts": {
-    "start": "node api/webhook.js"
+    "start": "node api/index.js"
   },
   "dependencies": {
     "@line/bot-sdk": "^9.6.0",
