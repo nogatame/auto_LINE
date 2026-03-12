@@ -37,7 +37,16 @@ module.exports = async (req, res) => {
       
       if (doc.exists) {
         const data = doc.data(); // ここで data に代入
-        messageText = data["0"] || "内容なし"; // data を参照
+        const messageArray = [];
+        if (data["0"]) {
+          messageArray.push({ type: 'text', text: data["0"] });
+        }
+        if (data["1"]) {
+          messageArray.push({ type: 'text', text: data["1"] });
+        }
+        if (messageArray.length === 0) {
+          messageArray.push({ type: 'text', text: "データが見つかりませんでした" });
+        }
       }
 
       // LINEに返信
@@ -49,7 +58,7 @@ module.exports = async (req, res) => {
         },
         body: JSON.stringify({
           replyToken: replyToken,
-          messages: [{ type: 'text', text: messageText }]
+          messages: messageArray
         })
       });
     }
@@ -61,5 +70,6 @@ module.exports = async (req, res) => {
     res.status(200).send('Internal Error But OK');
   }
 };
+
 
 
