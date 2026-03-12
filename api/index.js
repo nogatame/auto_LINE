@@ -34,10 +34,9 @@ module.exports = async (req, res) => {
       const doc = await db.collection('latest_broadcast').doc('text').get();
       
       let messageText = "データが見つかりませんでした";
-      
+      const messageArray = [];
       if (doc.exists) {
         const data = doc.data(); // ここで data に代入
-        const messageArray = [];
         if (data["0"]) {
           messageArray.push({ type: 'text', text: data["0"] });
         }
@@ -70,6 +69,7 @@ module.exports = async (req, res) => {
     res.status(200).send('Internal Error But OK');
   }
 };
+
 
 
 
