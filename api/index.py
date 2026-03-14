@@ -13,11 +13,11 @@ LINE_ACCESS_TOKEN = os.environ.get("LINE_ACCESS_TOKEN")
 # Firebaseの初期化
 if not firebase_admin._apps:
     # 秘密鍵の改行コード（\n）を正しく処理するようにします
-    private_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+    origin_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
     cred = credentials.Certificate({
         "project_id": "kousoku-6477e",
         "client_email": "firebase-adminsdk-fbsvc@kousoku-6477e.iam.gserviceaccount.com",
-        "private_key": private_key.replace('\\n', '\n')
+        "private_key": origin_key.replace('\\n', '\n')
     })
     firebase_admin.initialize_app(cred)
 
