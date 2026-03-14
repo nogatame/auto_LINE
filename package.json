@@ -2,9 +2,9 @@
   "name": "line-bot-vercel",
   "version": "1.0.0",
   "description": "Firestore and LINE Bot on Vercel",
-  "main": "api/webhook.js",
+  "main": "api/index.py",
   "scripts": {
-    "start": "node api/index.js"
+    "start": "node api/index.py"
   },
   "dependencies": {
     "@line/bot-sdk": "^9.6.0",
