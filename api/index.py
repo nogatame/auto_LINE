@@ -17,7 +17,7 @@ if not firebase_admin._apps:
     cred = credentials.Certificate({
         "project_id": "kousoku-6477e",
         "client_email": "firebase-adminsdk-fbsvc@kousoku-6477e.iam.gserviceaccount.com",
-        "private_key": origin_key.replace('\\n', '\n')
+        "private_key": origin_key
     })
     print(origin_key)
     firebase_admin.initialize_app(cred)
