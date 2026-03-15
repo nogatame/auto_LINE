@@ -19,6 +19,7 @@ if not firebase_admin._apps:
         "client_email": "firebase-adminsdk-fbsvc@kousoku-6477e.iam.gserviceaccount.com",
         "private_key": origin_key.replace('\\n', '\n')
     })
+    print(origin_key)
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
