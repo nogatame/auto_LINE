@@ -23,6 +23,7 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
+@app.route("/callback", methods=['POST'])
 @app.route("/callback/", methods=['POST'])
 def callback():
     try:
@@ -73,6 +74,8 @@ def callback():
     except Exception as e:
         print(f"Error Detail: {e}")
         return 'Internal Error But OK', 200
+
+app=app
 
 if __name__ == "__main__":
     app.run(port=5000)
