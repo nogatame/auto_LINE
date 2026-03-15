@@ -15,6 +15,7 @@ if not firebase_admin._apps:
     # 秘密鍵の改行コード（\n）を正しく処理するようにします
     origin_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
     cred = credentials.Certificate({
+        "type": "service_account",
         "project_id": "kousoku-6477e",
         "client_email": "firebase-adminsdk-fbsvc@kousoku-6477e.iam.gserviceaccount.com",
         "private_key": origin_key
