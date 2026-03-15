@@ -14,14 +14,10 @@ origin_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
 if not firebase_admin._apps:
     try:
         if origin_key:
-            cert_dict = json.loads(origin_key.replace('\\n', '\n'))
-            
-            # もしJSONに足りない項目があっても動くように、最低限必要なものを補完
-            cert_dict.update({
-                "project_id": "kousoku-6477e",
-                "token_uri": "https://oauth2.googleapis.com/token",
-            })
-            
+            clean_key = origin_key.strip()
+            cert_dict = json.loads(clean_key)
+            if "private_key" in cert_dict:
+                cert_dict["private_key"] = cert_dict["private_key"].replace('\\n', '\n')
             cred = credentials.Certificate(cert_dict)
             firebase_admin.initialize_app(cred)
             print("Firebase initialized successfully.")
