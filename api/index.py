@@ -23,8 +23,7 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
-@app.route("/callback", methods=['POST'])
-@app.route("/callback/", methods=['POST'])
+@app.route("/api/index", methods=['POST'])
 def callback():
     try:
         body = request.get_json()
