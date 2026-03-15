@@ -9,21 +9,28 @@ app = Flask(__name__)
 
 # --- 初期化設定 ---
 LINE_ACCESS_TOKEN = os.environ.get("LINE_ACCESS_TOKEN")
-
+origin_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
 # Firebaseの初期化
 if not firebase_admin._apps:
+    try:
+        if origin_key:
+            cert_dict = json.loads(origin_key.replace('\\n', '\n'))
+            
+            # もしJSONに足りない項目があっても動くように、最低限必要なものを補完
+            cert_dict.update({
+                "project_id": "kousoku-6477e",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            })
+            
+            cred = credentials.Certificate(cert_dict)
+            firebase_admin.initialize_app(cred)
+            print("Firebase initialized successfully.")
+        else:
+            print("FIREBASE_SERVICE_ACCOUNT is not set.")
+    except Exception as e:
+        print(f"Firebase Init Error: {e}")
     # 秘密鍵の改行コード（\n）を正しく処理するようにします
-    origin_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
-    cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": "kousoku-6477e",
-        "client_email": "firebase-adminsdk-fbsvc@kousoku-6477e.iam.gserviceaccount.com",
-        "private_key": origin_key
-    })
-    print(origin_key)
-    firebase_admin.initialize_app(cred)
-
-db = firestore.client()
+db = firestore.client() if firebase_admin._apps else None
 
 @app.route("/api/index", methods=['POST'])
 def callback():
