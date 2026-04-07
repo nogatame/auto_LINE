@@ -10,7 +10,7 @@ app = Flask(__name__)
 # --- 初期化設定 ---
 LINE_ACCESS_TOKEN = os.environ.get("LINE_ACCESS_TOKEN")
 origin_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
-# Firebaseの初期化
+# Firebaseの初期化ああ
 if not firebase_admin._apps:
     try:
         if origin_key:
