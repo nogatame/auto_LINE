@@ -39,8 +39,9 @@ def callback():
 
         event = events[0]
         event_type = event.get('type')
+        user_message = event.message.text
 
-        if event_type == 'message' or event_type == 'follow':
+        if user_message == '施設予約' or event_type == 'follow':
             reply_token = event.get('replyToken')
 
             # Firestoreから取得
