@@ -68,10 +68,10 @@ def callback():
                 # キーの振り分け
                 if event_type == 'follow':
                     keys = ["0", "1", "2", "3"]
-                elif '杉本' in user_message_clean:
-                    keys = ["0", "1"]
                 elif '森ノ宮' in user_message_clean:
                     keys = ["2", "3"]
+                elif '杉本' in user_message_clean:
+                    keys = ["0", "1"]
                 else:
                     print("DEBUG: No keys matched!") # ここを通るなら文字が一致していません
                     keys = []
