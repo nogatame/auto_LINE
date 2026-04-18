@@ -112,7 +112,6 @@ def callback():
             
             requests.post(line_url, headers=headers, data=json.dumps(payload))
 
-        return 'OK', 200
 
         if user_message == '森ノ宮施設':
             reply_token = event.get('replyToken')
