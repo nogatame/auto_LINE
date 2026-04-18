@@ -42,8 +42,8 @@ def callback():
         user_message = ""
         if event_type == 'message' and 'message' in event:
             user_message = event.get('message').get('text', '')
-        
-        if user_message == '施設予約' or event_type == 'follow':
+
+        if event_type == 'follow':
             reply_token = event.get('replyToken')
 
             # Firestoreから取得
@@ -58,6 +58,77 @@ def callback():
                     message_array.append({'type': 'text', 'text': data["0"]})
                 if data.get("1"):
                     message_array.append({'type': 'text', 'text': data["1"]})
+                if data.get("2"):
+                    message_array.append({'type': 'text', 'text': data["2"]})
+                if data.get("3"):
+                    message_array.append({'type': 'text', 'text': data["3"]})
+            # データがない場合のフォールバック
+            if not message_array:
+                message_array.append({'type': 'text', 'text': "データが見つかりませんでした"})
+
+            # LINEに返信
+            line_url = 'https://api.line.me/v2/bot/message/reply'
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+            }
+            payload = {
+                'replyToken': reply_token,
+                'messages': message_array
+            }
+            
+            requests.post(line_url, headers=headers, data=json.dumps(payload))
+        
+        if user_message == '杉本施設':
+            reply_token = event.get('replyToken')
+
+            # Firestoreから取得
+            doc_ref = db.collection('latest_broadcast').document('text')
+            doc = doc_ref.get()
+
+            message_array = []
+            if doc.exists:
+                data = doc.to_dict()
+                # キー "0", "1" が存在するか確認してリストに追加
+                if data.get("0"):
+                    message_array.append({'type': 'text', 'text': data["0"]})
+                if data.get("1"):
+                    message_array.append({'type': 'text', 'text': data["1"]})
+            
+            # データがない場合のフォールバック
+            if not message_array:
+                message_array.append({'type': 'text', 'text': "データが見つかりませんでした"})
+
+            # LINEに返信
+            line_url = 'https://api.line.me/v2/bot/message/reply'
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
+            }
+            payload = {
+                'replyToken': reply_token,
+                'messages': message_array
+            }
+            
+            requests.post(line_url, headers=headers, data=json.dumps(payload))
+
+        return 'OK', 200
+
+        if user_message == '森ノ宮施設':
+            reply_token = event.get('replyToken')
+
+            # Firestoreから取得
+            doc_ref = db.collection('latest_broadcast').document('text')
+            doc = doc_ref.get()
+
+            message_array = []
+            if doc.exists:
+                data = doc.to_dict()
+                # キー "0", "1" が存在するか確認してリストに追加
+                if data.get("2"):
+                    message_array.append({'type': 'text', 'text': data["2"]})
+                if data.get("3"):
+                    message_array.append({'type': 'text', 'text': data["3"]})
             
             # データがない場合のフォールバック
             if not message_array:
