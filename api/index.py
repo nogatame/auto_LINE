@@ -73,7 +73,7 @@ def callback():
                 elif '杉本' in user_message_clean:
                     keys = ["0", "1"]
                 elif '森ノ宮' in user_message_clean or '森之宮' in user_message_clean or '森の宮' in user_message_clean:
-                    keys = ["2", "3"]
+                    keys = ["0", "1"]
                 else:
                     print("DEBUG: No keys matched!") # ここを通るなら文字が一致していません
                     keys = []
