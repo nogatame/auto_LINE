@@ -111,9 +111,7 @@ def callback():
             }
             
             requests.post(line_url, headers=headers, data=json.dumps(payload))
-
-
-        if user_message == '森ノ宮施設':
+        elif user_message == '森ノ宮施設':
             reply_token = event.get('replyToken')
 
             # Firestoreから取得
@@ -145,7 +143,6 @@ def callback():
             }
             
             requests.post(line_url, headers=headers, data=json.dumps(payload))
-
         return 'OK', 200
 
     except Exception as e:
