@@ -48,7 +48,15 @@ def callback():
         
         # 1. 変数をあらかじめ初期化しておく（if文の外に出す）
         message_array = []
-        target_event = (event_type == 'follow' or user_message == '杉本施設' or user_message == '森ノ宮施設')
+        user_message_clean = user_message.strip() # 前後の空白を取り除く
+        
+        target_event = (
+            event_type == 'follow' or 
+            '杉本' in user_message_clean or 
+            '森ノ宮' in user_message_clean or
+            '森之宮' in user_message_clean or
+            '森の宮' in user_message_clean
+        )
 
         # 2. 条件に合致する場合のみFirestoreからデータを取得
         if target_event and db:
@@ -57,14 +65,14 @@ def callback():
             
             if doc.exists:
                 data = doc.to_dict()
-                print(f"DEBUG: User Message is [{user_message}]")
+                print(f"DEBUG: User Message is [{user_message_clean}]")
                 print(f"DEBUG: Target Event is {target_event}")
                 # キーの振り分け
                 if event_type == 'follow':
                     keys = ["0", "1", "2", "3"]
-                elif user_message == '杉本施設':
+                elif '杉本' in user_message_clean:
                     keys = ["0", "1"]
-                elif user_message == '森ノ宮施設':
+                elif '森ノ宮' in user_message_clean or '森之宮' in user_message_clean or '森の宮' in user_message_clean:
                     keys = ["2", "3"]
                 else:
                     print("DEBUG: No keys matched!") # ここを通るなら文字が一致していません
@@ -73,7 +81,9 @@ def callback():
                 # メッセージ配列を作成
                 for key in keys:
                     if data.get(key):
-                        message_array.append({'type': 'text', 'text': data[key]})
+                        # メッセージの先頭に付いている改行（\n）等を取り除いてから送る
+                        clean_text = data[key].strip()
+                        message_array.append({'type': 'text', 'text': clean_text})
 
         # データが見つからなかった場合のフォールバック
         if target_event and not message_array:
@@ -90,7 +100,8 @@ def callback():
                 'replyToken': reply_token,
                 'messages': message_array
             }
-            requests.post(line_url, headers=headers, data=json.dumps(payload))
+            res = requests.post(line_url, headers=headers, data=json.dumps(payload))
+            print(f"LINE API Response: {res.status_code} - {res.text}") # エラー原因が見えるようにログを出力
 
         return 'OK', 200
 
