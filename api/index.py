@@ -53,9 +53,7 @@ def callback():
         target_event = (
             event_type == 'follow' or 
             '杉本' in user_message_clean or 
-            '森ノ宮' in user_message_clean or
-            '森之宮' in user_message_clean or
-            '森の宮' in user_message_clean
+            '森ノ宮' in user_message_clean
         )
 
         # 2. 条件に合致する場合のみFirestoreからデータを取得
@@ -72,7 +70,7 @@ def callback():
                     keys = ["0", "1", "2", "3"]
                 elif '杉本' in user_message_clean:
                     keys = ["0", "1"]
-                elif '森ノ宮' in user_message_clean or '森之宮' in user_message_clean or '森の宮' in user_message_clean:
+                elif '森ノ宮' in user_message_clean:
                     keys = ["0", "1"]
                 else:
                     print("DEBUG: No keys matched!") # ここを通るなら文字が一致していません
