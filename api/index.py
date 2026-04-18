@@ -39,67 +39,46 @@ def callback():
 
         event = events[0]
         event_type = event.get('type')
+        reply_token = event.get('replyToken')
         user_message = ""
         if event_type == 'message' and 'message' in event:
             user_message = event.get('message').get('text', '')
 
-        if event_type == 'follow':
-            reply_token = event.get('replyToken')
-
-            # Firestoreから取得
-            doc_ref = db.collection('latest_broadcast').document('text')
-            doc = doc_ref.get()
-
-            message_array = []
-            if doc.exists:
-                data = doc.to_dict()
-                # キー "0", "1" が存在するか確認してリストに追加
-                if data.get("0"):
-                    message_array.append({'type': 'text', 'text': data["0"]})
-                if data.get("1"):
-                    message_array.append({'type': 'text', 'text': data["1"]})
-                if data.get("2"):
-                    message_array.append({'type': 'text', 'text': data["2"]})
-                if data.get("3"):
-                    message_array.append({'type': 'text', 'text': data["3"]})
-            # データがない場合のフォールバック
-            if not message_array:
-                message_array.append({'type': 'text', 'text': "データが見つかりませんでした"})
-
-            # LINEに返信
-            line_url = 'https://api.line.me/v2/bot/message/reply'
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
-            }
-            payload = {
-                'replyToken': reply_token,
-                'messages': message_array
-            }
-            
-            requests.post(line_url, headers=headers, data=json.dumps(payload))
+        # --- ここから修正の重要ポイント ---
         
-        if user_message == '杉本施設':
-            reply_token = event.get('replyToken')
+        # 1. 変数をあらかじめ初期化しておく（if文の外に出す）
+        message_array = []
+        target_event = (event_type == 'follow' or user_message == '杉本施設' or user_message == '森ノ宮施設')
 
-            # Firestoreから取得
+        # 2. 条件に合致する場合のみFirestoreからデータを取得
+        if target_event and db:
             doc_ref = db.collection('latest_broadcast').document('text')
             doc = doc_ref.get()
-
-            message_array = []
+            
             if doc.exists:
                 data = doc.to_dict()
-                # キー "0", "1" が存在するか確認してリストに追加
-                if data.get("0"):
-                    message_array.append({'type': 'text', 'text': data["0"]})
-                if data.get("1"):
-                    message_array.append({'type': 'text', 'text': data["1"]})
-            
-            # データがない場合のフォールバック
-            if not message_array:
-                message_array.append({'type': 'text', 'text': "データが見つかりませんでした"})
+                
+                # キーの振り分け
+                if event_type == 'follow':
+                    keys = ["0", "1", "2", "3"]
+                elif user_message == '杉本施設':
+                    keys = ["0", "1"]
+                elif user_message == '森ノ宮施設':
+                    keys = ["2", "3"]
+                else:
+                    keys = []
 
-            # LINEに返信
+                # メッセージ配列を作成
+                for key in keys:
+                    if data.get(key):
+                        message_array.append({'type': 'text', 'text': data[key]})
+
+        # データが見つからなかった場合のフォールバック
+        if target_event and not message_array:
+            message_array.append({'type': 'text', 'text': "データが見つかりませんでした"})
+
+        # LINEに送信
+        if message_array and reply_token:
             line_url = 'https://api.line.me/v2/bot/message/reply'
             headers = {
                 'Content-Type': 'application/json',
@@ -109,45 +88,13 @@ def callback():
                 'replyToken': reply_token,
                 'messages': message_array
             }
-            
             requests.post(line_url, headers=headers, data=json.dumps(payload))
-        elif user_message == '森ノ宮施設':
-            reply_token = event.get('replyToken')
 
-            # Firestoreから取得
-            doc_ref = db.collection('latest_broadcast').document('text')
-            doc = doc_ref.get()
-
-            message_array = []
-            if doc.exists:
-                data = doc.to_dict()
-                # キー "0", "1" が存在するか確認してリストに追加
-                if data.get("2"):
-                    message_array.append({'type': 'text', 'text': data["2"]})
-                if data.get("3"):
-                    message_array.append({'type': 'text', 'text': data["3"]})
-            
-            # データがない場合のフォールバック
-            if not message_array:
-                message_array.append({'type': 'text', 'text': "データが見つかりませんでした"})
-
-            # LINEに返信
-            line_url = 'https://api.line.me/v2/bot/message/reply'
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {LINE_ACCESS_TOKEN}'
-            }
-            payload = {
-                'replyToken': reply_token,
-                'messages': message_array
-            }
-            
-            requests.post(line_url, headers=headers, data=json.dumps(payload))
         return 'OK', 200
 
     except Exception as e:
         print(f"Error Detail: {e}")
-        return 'Internal Error But OK', 200
+        return 'Internal Error', 500
 
 app=app
 
