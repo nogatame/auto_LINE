@@ -78,10 +78,13 @@ def callback():
 
                 # メッセージ配列を作成
                 for key in keys:
-                    if data.get(key):
-                        # メッセージの先頭に付いている改行（\n）等を取り除いてから送る
-                        clean_text = data[key].strip()
-                        message_array.append({'type': 'text', 'text': clean_text})
+                    # ★重要：文字列キーと数値キーの両方を探す
+                    val = data.get(str(key))
+                    if val is None and str(key).isdigit():
+                        val = data.get(int(key))
+                    
+                    if val:
+                        message_array.append({'type': 'text', 'text': str(val).strip()})
 
         # データが見つからなかった場合のフォールバック
         if target_event and not message_array:
