@@ -57,7 +57,8 @@ def callback():
             
             if doc.exists:
                 data = doc.to_dict()
-                
+                print(f"DEBUG: User Message is [{user_message}]")
+                print(f"DEBUG: Target Event is {target_event}")
                 # キーの振り分け
                 if event_type == 'follow':
                     keys = ["0", "1", "2", "3"]
@@ -66,6 +67,7 @@ def callback():
                 elif user_message == '森ノ宮施設':
                     keys = ["2", "3"]
                 else:
+                    print("DEBUG: No keys matched!") # ここを通るなら文字が一致していません
                     keys = []
 
                 # メッセージ配列を作成
